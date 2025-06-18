@@ -1,0 +1,7 @@
+{
+  "name": "LocationLogger",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
