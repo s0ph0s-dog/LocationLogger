@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>Add Log Entry</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="add()" [strong]="true">Add</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <!-- TODO: this should have a background color one step lighter (in dark
+  mode) because it's in a modal with a lighter background color, but I haven't
+  figured out how to do it in a way that works for both light and dark mode.
+  This is a problem I wish Ionic would just solve on its own. -->
+  <ion-list [inset]="true">
+    <ion-item>
+      <ion-label>Date</ion-label>
+      <ion-datetime-button datetime="datetime"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime #dateInput id="datetime"></ion-datetime>
+        </ng-template>
+      </ion-modal>
+    </ion-item>
+    <ion-item>
+      <ion-input #latitudeInput label-placement="fixed" label="Latitude" type="number" placeholder="0.0"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input #longitudeInput label-placement="fixed" label="Longitude" type="number" placeholder="0.0"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-select #countryInput label="Country" interface="popover" placeholder="Choose…">
+        <ion-select-option>United States</ion-select-option>
+        <ion-select-option>Canada</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+  <div class="ion-padding">
+  <ion-button expand="block" (click)="doGeolocation()">Locate Me</ion-button>
+  </div>
+</ion-content>

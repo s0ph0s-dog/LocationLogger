@@ -1,1 +1,16 @@
-
+ion-tab-button {
+  ion-icon.normal {
+    display: block;
+  }
+  ion-icon.selected {
+    display: none;
+  }
+  &.tab-selected {
+    ion-icon.normal {
+      display: none;
+    }
+    ion-icon.selected {
+      display: block;
+    }
+  }
+}

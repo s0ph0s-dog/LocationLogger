@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Log
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Log</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  @if (logEntries().length > 0) {
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="openNewLogModal(true)">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-list [inset]="true">
+    <app-log-row
+      *ngFor="let logEntry of logEntries()"
+      [logEntry]="logEntry"
+    ></app-log-row>
+  </ion-list>
+  } @else {
+  <div class="ion-padding no-logs">
+    <ion-text><h3>No location logs yet.</h3></ion-text>
+    <ion-button expand="block" (click)="openNewLogModal(true)">Log Location…</ion-button>
+  </div>
+  }
+</ion-content>
