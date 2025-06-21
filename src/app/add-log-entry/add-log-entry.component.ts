@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import {
   IonContent,
   IonHeader,
@@ -20,13 +20,15 @@ import {
   AlertController,
 } from '@ionic/angular/standalone';
 import { LogDatabaseService } from '../logdatabase.service';
+import { rfc3339 } from '../rfc3339';
+import { CountryReverseGeocoderService } from '../country-reverse-geocoder.service';
 
 @Component({
   selector: 'app-add-log-entry',
   templateUrl: './add-log-entry.component.html',
   styleUrls: ['./add-log-entry.component.scss'],
   imports: [
-    FormsModule,
+    ReactiveFormsModule,
     IonContent,
     IonHeader,
     IonToolbar,
@@ -46,18 +48,26 @@ import { LogDatabaseService } from '../logdatabase.service';
 })
 export class AddLogEntryComponent implements OnInit {
 
-  @ViewChild('latitudeInput') latitudeInput!: IonInput;
-  @ViewChild('longitudeInput') longitudeInput!: IonInput;
-  @ViewChild('dateInput') dateInput!: IonDatetime;
-  @ViewChild('countryInput') countryInput!: IonSelect;
+  private formBuilder = inject(FormBuilder);
+  private modalCtrl = inject(ModalController);
+  private alertCtrl = inject(AlertController);
+  private crgcs = inject(CountryReverseGeocoderService);
+  addLogForm: FormGroup;
 
   presentingElement!: HTMLElement | null;
   logDatabaseService: LogDatabaseService = inject(LogDatabaseService);
 
-  constructor(private modalCtrl: ModalController, private alertCtrl: AlertController) { }
+  constructor() {
+    const now = new Date();
+    this.addLogForm = this.formBuilder.group({
+      date: [rfc3339(now), Validators.required],
+      latitude: ['', Validators.required],
+      longitude: ['', Validators.required],
+      country: [null, Validators.required],
+    });
+  }
 
   ngOnInit() {
-    const now = new Date();
     //this.dateInput.value = now.toISOString();
   }
 
@@ -66,18 +76,13 @@ export class AddLogEntryComponent implements OnInit {
   }
 
   add() {
-    const date = Array.isArray(this.dateInput.value)
-      ? this.dateInput.value[0]
-      : this.dateInput.value;
-    if (!date) {
-      console.log("bad date:", date)
-      return this.modalCtrl.dismiss(null, 'confirm');
-    }
+    const formValues = this.addLogForm.value;
+    const date = formValues.date;
     this.logDatabaseService.addEntry(
       new Date(date),
-      Number(this.latitudeInput.value),
-      Number(this.longitudeInput.value),
-      this.countryInput.value
+      Number(formValues.latitude),
+      Number(formValues.longitude),
+      formValues.country,
     );
     return this.modalCtrl.dismiss(null, 'confirm');
   }
@@ -106,9 +111,16 @@ export class AddLogEntryComponent implements OnInit {
   }
 
   updateFormWithLocation(pos: GeolocationPosition) {
-    console.log(pos.coords.latitude, pos.coords.longitude);
-    this.latitudeInput.value = pos.coords.latitude;
-    this.longitudeInput.value = pos.coords.longitude;
+    const countryGuess = this.crgcs.getCountry(pos.coords.latitude, pos.coords.longitude);
+    if (countryGuess) {
+      this.addLogForm.patchValue({
+        country: countryGuess.name,
+      })
+    }
+    this.addLogForm.patchValue({
+      latitude: pos.coords.latitude,
+      longitude: pos.coords.longitude
+    });
   }
 
   async doGeolocation(this: AddLogEntryComponent) {

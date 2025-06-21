@@ -17,6 +17,14 @@ export const routes: Routes = [
           import('../settings/settings.page').then((m) => m.SettingsPage),
       },
       {
+        path: 'settings/export',
+        loadComponent: () => import('../settings/export/export.page').then( m => m.ExportPage)
+      },
+      {
+        path: 'settings/privacy',
+        loadComponent: () => import('../settings/privacy/privacy.page').then( m => m.PrivacyPage)
+      },
+      {
         path: '',
         redirectTo: '/tabs/log',
         pathMatch: 'full',

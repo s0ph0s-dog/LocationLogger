@@ -1,0 +1,53 @@
+<ion-content>
+  <ion-header class="ion-no-border">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-back-button defaultHref="/tabs/settings"></ion-back-button>
+      </ion-buttons>
+      <ion-title>Privacy Policy</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <div class="ion-padding">
+    <p>
+      <strong>I don't want your data.</strong> Data are like radioactive
+      materials: they can be useful in specific ways, generally you shouldn't
+      get much of them together in one spot, and if you aren't careful with them
+      you'll hurt yourself or others.
+    </p>
+    <p>
+      This application is a Progressive Web Application, but it does not send any
+      data that you enter to any server.  All of the data you provide are stored
+      exclusively on your device, using data storage features offered by your web
+      browser (IndexedDB).  You have complete control over your data, and can do
+      with it as you please.
+    </p>
+    <p>
+      Right now, this application has no support for showing your locations on a
+      map.  I do not want to send your location data to Google if I can help it.
+      I will see how possible it is to include an OpenStreetMap viewer, when I get
+      around to adding the detail/edit functionality for log entries.
+    </p>
+    <p>
+      In the future, I may add a feature to send you a notification if you haven't
+      logged your location by a specific time each day.  Because browser makers
+      are not interested in enabling time-based notification triggers for web
+      applications, I will have to send a push notification from my web server.
+      If I do choose to add this functionality, I will need to collect:
+    </p>
+    <ul>
+      <li>A push notification identifier for your device, and</li>
+      <li>The time of day at which you want to be notified.</li>
+    </ul>
+    <p>
+      These pieces of information will be used exclusively to send you reminder
+      notifications.  They will be deleted as soon as you turn off notifications,
+      or after 3 days of failed notification deliveries (because you deleted the
+      app, etc.).
+    </p>
+    <p>
+      If browser makers decide to enable time-based notification triggers, I will
+      rip out all of the server notification functionality, and collect no
+      information from you.
+    </p>
+  </div>
+</ion-content>

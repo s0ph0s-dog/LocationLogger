@@ -13,7 +13,12 @@
     </ion-toolbar>
   </ion-header>
 
-  @if (logEntries().length > 0) {
+  @let logEntriesUnwrapped = logEntries();
+  @if (logEntriesUnwrapped == null) {
+  <div class="ion-padding center">
+    <ion-spinner></ion-spinner>
+  </div>
+  } @else if (logEntriesUnwrapped.length > 0) {
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button (click)="openNewLogModal(true)">
       <ion-icon name="add"></ion-icon>
@@ -27,7 +32,7 @@
     ></app-log-row>
   </ion-list>
   } @else {
-  <div class="ion-padding no-logs">
+  <div class="ion-padding center rhythm">
     <ion-text><h3>No location logs yet.</h3></ion-text>
     <ion-button expand="block" (click)="openNewLogModal(true)">Log Location…</ion-button>
   </div>

@@ -1,5 +1,6 @@
-import { Injectable, Signal, signal, computed } from '@angular/core';
+import { Injectable, Signal, WritableSignal, signal, computed } from '@angular/core';
 import { LogEntry } from './logentry';
+import { openDB, IDBPDatabase, DBSchema } from 'idb';
 
 /*
 const demoData: LogEntry[] = [
@@ -33,34 +34,90 @@ const demoData: LogEntry[] = [
 ];
 */
 
+const DB_NAME = "LocationLogger";
+const DB_VERSION = 1;
+
+interface LogDatabase extends DBSchema {
+  logEntries: {
+    key: string;
+    value: LogEntry;
+    indexes: { 'byDate': Date };
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class LogDatabaseService {
-  logEntries = signal([] as LogEntry[]);
+  private logEntries: WritableSignal<LogEntry[] | undefined> = signal(undefined);
+  private logDb: IDBPDatabase<LogDatabase> | null = null;
 
-  constructor() { }
+  constructor() {
+    if (!('indexedDB' in window)) {
+      throw new Error('IndexedDB not supported in this browser.');
+    }
+    console.log("Initializing IndexedDB...");
+    const p = openDB<LogDatabase>(DB_NAME, DB_VERSION, {
+      upgrade (db) {
+        if (!db.objectStoreNames.contains('logEntries')) {
+          const logEntryStore = db.createObjectStore('logEntries', { keyPath: 'id' });
 
-  getAllEntries(): Signal<LogEntry[]> {
-    console.log(this.logEntries());
+          logEntryStore.createIndex('byDate', 'date', { unique: false });
+        }
+        console.log("IndexedDB initialized.");
+      }
+    });
+    p.then((result) => {
+      this.logDb = result;
+      const allEntriesP = this.getAllEntries();
+      allEntriesP.then((_) => {
+        console.log("Log list loaded");
+      })
+    });
+  }
+
+  async getAllEntries(): Promise<Signal<LogEntry[]|undefined>> {
+    if (this.logDb) {
+      const index = this.logDb.transaction('logEntries').store.index("byDate");
+      let allEntries: LogEntry[] = [];
+      // Iterate in reverse order, so that the newest log entries appear at the
+      // top of the list.  This better matches user expectations about how
+      // a log like this should work.
+      for await(const cursor of index.iterate(null, "prev")) {
+        allEntries.push(cursor.value);
+      }
+      console.log(allEntries);
+      this.logEntries.set(allEntries);
+    }
     return this.logEntries;
   }
 
   getEntryById(id: string): Signal<LogEntry | undefined> {
-    return computed(() => this.logEntries().filter((le) => le.id === id)[0]);
+    const le: LogEntry[]|undefined = this.logEntries()
+    if (le === undefined) {
+      return computed(() => undefined);
+    } else {
+      return computed(() => le.filter((le) => le.id === id)[0]);
+    }
   }
 
-  addEntry(date: Date, lat: number, lon: number, country: string) {
+  async addEntry(date: Date, lat: number, lon: number, country: string) {
+    if (!this.logDb) {
+      return;
+    }
     const entry = {
       id: crypto.randomUUID(),
       date: date,
       country: country,
-      coords: {
-        lat: lat,
-        lon: lon,
-      },
+      lat: lat,
+      lon: lon,
     };
-    this.logEntries.update((currentValue) => ([...currentValue, entry]));
-    console.log(this.logEntries());
+    const tx = this.logDb.transaction('logEntries', 'readwrite');
+    await Promise.all([
+      tx.store.add(entry),
+      tx.done,
+    ]);
+    const newEntriesList = await this.getAllEntries();
+    console.log(newEntriesList);
   }
 }

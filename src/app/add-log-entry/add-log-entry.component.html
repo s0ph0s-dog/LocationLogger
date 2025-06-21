@@ -5,11 +5,12 @@
     </ion-buttons>
     <ion-title>Add Log Entry</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="add()" [strong]="true">Add</ion-button>
+      <ion-button [strong]="true" type="submit" form="addLogForm">Add</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
+<form [formGroup]="addLogForm" id="addLogForm" (ngSubmit)="add()">
   <!-- TODO: this should have a background color one step lighter (in dark
   mode) because it's in a modal with a lighter background color, but I haven't
   figured out how to do it in a way that works for both light and dark mode.
@@ -20,18 +21,18 @@
       <ion-datetime-button datetime="datetime"></ion-datetime-button>
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
-          <ion-datetime #dateInput id="datetime"></ion-datetime>
+          <ion-datetime formControlName="date" id="datetime"></ion-datetime>
         </ng-template>
       </ion-modal>
     </ion-item>
     <ion-item>
-      <ion-input #latitudeInput label-placement="fixed" label="Latitude" type="number" placeholder="0.0"></ion-input>
+      <ion-input formControlName="latitude" label-placement="fixed" label="Latitude" type="number" placeholder="0.0"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-input #longitudeInput label-placement="fixed" label="Longitude" type="number" placeholder="0.0"></ion-input>
+      <ion-input formControlName="longitude" label-placement="fixed" label="Longitude" type="number" placeholder="0.0"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-select #countryInput label="Country" interface="popover" placeholder="Choose…">
+      <ion-select formControlName="country" required="true" label="Country" interface="popover" placeholder="Choose…">
         <ion-select-option>United States</ion-select-option>
         <ion-select-option>Canada</ion-select-option>
       </ion-select>
@@ -40,4 +41,5 @@
   <div class="ion-padding">
   <ion-button expand="block" (click)="doGeolocation()">Locate Me</ion-button>
   </div>
+</form>
 </ion-content>

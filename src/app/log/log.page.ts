@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, Signal, signal, inject, effect } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -10,6 +10,7 @@ import {
   IonIcon,
   IonText,
   IonButton,
+  IonSpinner,
   ModalController
 } from '@ionic/angular/standalone';
 import { CommonModule } from '@angular/common';
@@ -18,6 +19,7 @@ import { add } from 'ionicons/icons';
 import { LogDatabaseService } from '../logdatabase.service';
 import { LogRowComponent } from '../log-row/log-row.component';
 import { AddLogEntryComponent } from '../add-log-entry/add-log-entry.component';
+import { LogEntry } from '../logentry';
 
 @Component({
   selector: 'app-log',
@@ -35,16 +37,24 @@ import { AddLogEntryComponent } from '../add-log-entry/add-log-entry.component';
     IonIcon,
     IonText,
     IonButton,
+    IonSpinner,
     LogRowComponent,
   ],
 })
 export class LogPage implements OnInit {
   logDatabaseService: LogDatabaseService = inject(LogDatabaseService);
-  readonly logEntries = this.logDatabaseService.getAllEntries();
+  logEntries: Signal<LogEntry[]|undefined> = signal(undefined)
   presentingElement: HTMLElement | null = null;
 
   constructor(private modalCtrl: ModalController) {
+    effect(() => {
+      console.log("logEntries is:", this.logEntries);
+    })
     addIcons({ add });
+    this.logDatabaseService.getAllEntries()
+    .then((allEntries) => {
+      this.logEntries = allEntries;
+    });
   }
 
   ngOnInit(): void {
