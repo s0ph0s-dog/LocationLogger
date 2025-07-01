@@ -120,4 +120,22 @@ export class LogDatabaseService {
     const newEntriesList = await this.getAllEntries();
     console.log(newEntriesList);
   }
+
+  async deleteEntry(id: string) {
+    if (!this.logDb) {
+      return;
+    }
+    const tx = this.logDb.transaction('logEntries', 'readwrite');
+    await Promise.all([
+      tx.store.delete(id),
+      tx.done,
+    ]);
+    this.logEntries.update((entries) => {
+      if (entries) {
+        return entries.filter((entry) => entry.id != id);
+      } else {
+        return undefined;
+      }
+    });
+  }
 }
