@@ -41,4 +41,11 @@ export class LogRowComponent  implements OnInit {
     await this.logDatabaseService.deleteEntry(this.logEntry().id)
   }
 
+  entryLocStr(entry: LogEntry): string {
+    var prefix = "";
+    if (entry.level1 && entry.level1 !== "") {
+      prefix = `${entry.level1}, `
+    }
+    return `${prefix}${entry.country}`
+  }
 }

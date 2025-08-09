@@ -6,6 +6,6 @@
   </ion-item-options>
   <ion-item>
     <ion-label>{{ logEntry().date.toLocaleString() }}</ion-label>
-    <ion-note slot="end">{{ logEntry().country }}</ion-note>
+    <ion-note slot="end">{{ entryLocStr(logEntry()) }}</ion-note>
   </ion-item>
 </ion-item-sliding>

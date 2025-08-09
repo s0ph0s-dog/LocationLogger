@@ -64,6 +64,7 @@ export class AddLogEntryComponent implements OnInit {
       latitude: ['', Validators.required],
       longitude: ['', Validators.required],
       country: [null, Validators.required],
+      level1: [null, Validators.required],
     });
   }
 
@@ -83,8 +84,21 @@ export class AddLogEntryComponent implements OnInit {
       Number(formValues.latitude),
       Number(formValues.longitude),
       formValues.country,
+      formValues.level1,
     );
     return this.modalCtrl.dismiss(null, 'confirm');
+  }
+
+  getCountryNames() {
+    return this.crgcs.getCountryNames();
+  }
+
+  getStateNames() {
+    return this.crgcs.getStateNames();
+  }
+
+  getProvinceNames() {
+    return this.crgcs.getProvinceNames();
   }
 
   async showGeolocationError(err: GeolocationPositionError) {
@@ -111,11 +125,18 @@ export class AddLogEntryComponent implements OnInit {
   }
 
   updateFormWithLocation(pos: GeolocationPosition) {
-    const countryGuess = this.crgcs.getCountry(pos.coords.latitude, pos.coords.longitude);
-    if (countryGuess) {
+    console.log("doing geocoding");
+    const crgcsGuess = this.crgcs.getCountryAndLevel1(pos.coords.latitude, pos.coords.longitude);
+    console.log("geocoding complete; result:", crgcsGuess);
+    if (crgcsGuess && crgcsGuess.country) {
       this.addLogForm.patchValue({
-        country: countryGuess.name,
+        country: crgcsGuess.country.name,
       })
+      if (crgcsGuess.level1) {
+        this.addLogForm.patchValue({
+          level1: crgcsGuess.level1.name,
+        })
+      }
     }
     this.addLogForm.patchValue({
       latitude: pos.coords.latitude,

@@ -33,10 +33,29 @@
     </ion-item>
     <ion-item>
       <ion-select formControlName="country" required="true" label="Country" interface="popover" placeholder="Choose…">
-        <ion-select-option>United States</ion-select-option>
-        <ion-select-option>Canada</ion-select-option>
+        @for (country of getCountryNames(); track country) {
+        <ion-select-option [value]="country">{{ country }}</ion-select-option>
+        }
       </ion-select>
     </ion-item>
+    @if (addLogForm.get("country")?.value === "United States") {
+    <ion-item>
+      <ion-select formControlName="level1" required="true" label="State" interface="popover" placeholder="Choose…">
+        @for (state of getStateNames(); track state) {
+        <ion-select-option [value]="state">{{ state }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    }
+    @if (addLogForm.get("country")?.value === "Canada") {
+    <ion-item>
+      <ion-select formControlName="level1" required="true" label="Province" interface="popover" placeholder="Choose…">
+        @for (province of getProvinceNames(); track province) {
+        <ion-select-option [value]="province">{{ province }}</ion-select-option>
+        }
+      </ion-select>
+    </ion-item>
+    }
   </ion-list>
   <div class="ion-padding">
   <ion-button expand="block" (click)="doGeolocation()">Locate Me</ion-button>

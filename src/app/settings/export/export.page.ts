@@ -68,7 +68,7 @@ export class ExportPage implements OnInit {
     }
     var csvData = '';
     for (const entry of logData) {
-      csvData += `${rfc3339(entry.date)},${entry.lat},${entry.lon},${entry.country}\n`
+      csvData += `${rfc3339(entry.date)},${entry.lat},${entry.lon},${entry.country},${entry.level1}\n`
     }
     const now = new Date();
     const filename = `LocationLogger-export-${now.getFullYear()}-${now.getMonth()}-${now.getDay()}.csv`;

@@ -8,6 +8,7 @@ const demoData: LogEntry[] = [
     id: "50409d81-bb58-40b0-bfd6-5c1b3290e410",
     date: new Date("2025-06-18T12:00:00Z"),
     country: "Canada",
+    level1: "Ontario",
     coords: {
       lat: 43,
       lon: 79,
@@ -17,6 +18,7 @@ const demoData: LogEntry[] = [
     id: "c63a24d1-9fc0-4a1f-a611-98388d111a76",
     date: new Date("2025-06-17T12:00:00Z"),
     country: "United States",
+    level1: "New York",
     coords: {
       lat: 43,
       lon: 77,
@@ -26,6 +28,7 @@ const demoData: LogEntry[] = [
     id: "2480a229-5f93-4870-9349-05e94dafaaba",
     date: new Date("2025-06-16T12:00:00Z"),
     country: "United States",
+    level1: "New York",
     coords: {
       lat: 43,
       lon: 77,
@@ -35,7 +38,7 @@ const demoData: LogEntry[] = [
 */
 
 const DB_NAME = "LocationLogger";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 interface LogDatabase extends DBSchema {
   logEntries: {
@@ -101,7 +104,7 @@ export class LogDatabaseService {
     }
   }
 
-  async addEntry(date: Date, lat: number, lon: number, country: string) {
+  async addEntry(date: Date, lat: number, lon: number, country: string, level1: string) {
     if (!this.logDb) {
       return;
     }
@@ -109,6 +112,7 @@ export class LogDatabaseService {
       id: crypto.randomUUID(),
       date: date,
       country: country,
+      level1: level1,
       lat: lat,
       lon: lon,
     };
